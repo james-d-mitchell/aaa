@@ -107,6 +107,26 @@ function(inalph, outalph, tranfunc, outfunc)
   return T;
 end);
 
+InstallMethod(RandomTransducer,"gives random transducer of given alphabet size and number of states",[IsPosInt,IsPosInt],
+function(AlphSize,NrStates)
+	local i, j, k, OutputLength, Pi, Lambda;
+	Pi:= [];
+	Lambda:= [];
+	for i in [1 .. NrStates] do
+	   Add(Pi,[]);
+	   Add(Lambda,[]);
+	   for j in [1 .. AlphSize] do
+		Add(Pi[i],Random([1 .. NrStates]));
+		OutputLength:= Random([0 .. 3]);
+		Add(Lambda[i],[]);
+		for k in [1 .. OutputLength] do
+			Add(Lambda[i][j],Random([0 .. AlphSize - 1]));
+		od;
+	   od;
+	od;
+	return Transducer(AlphSize,AlphSize,Pi,Lambda);
+end);
+
 InstallMethod(TransducerFunction, "for a transducer, a dense list and a posint",
 [IsTransducer, IsDenseList, IsPosInt],
 function(T, input, state)
