@@ -338,11 +338,47 @@ function(T)
   return fail;
 end);
 
+QuotientTransducer := function(T,EqR) 
+  local Classes, class, i, Pi, Lambda, initialclass; 
+  Classes:=ShallowCopy(EquivalenceRelationPartition(EquivalenceRelationByPairs(Domain(States(T)),EqR)));
+  
+  class := function(q)
+        local j;
+        for j in [1 .. Length(Classes)] do
+                if q in Classes[j] then
+                        return j;
+                fi;
+        od;
+	return fail;
+  end;
+  for i in States(T) do
+  	if class(i)=fail then
+		Add(Classes,[i]);
+	fi;
+  od;
+  for i in Classes do
+  	if 1 in i then
+          initialclass := i;
+        fi;
+  od;
+  Remove(Classes,Position(Classes,initialclass));
+  Classes := Concatenation([initialclass],Classes);
+  Pi:= ShallowCopy(Classes);
+  Lambda := ShallowCopy(Classes);
+  Apply(Pi,x -> TransitionFunction(T)[x[1]]);
+  Apply(Lambda, x-> OutputFunction(T)[x[1]]);
+  for i in Pi do
+        Apply(i,class);
+  od;
+  return Transducer(Length(InputAlphabet(T)),Length(OutputAlphabet(T)),Pi,Lambda
+);
+end;
+
 
 InstallMethod(MinimiseTransducer, "for a transducer",
 [IsTransducer],
 function(T)
-  local initialclass, x, Pi, Lambda, Bad, EqRelation, i, tuple, NewTuple, b, flag, Classes, class;
+  local  x, Bad, EqRelation, i, tuple, NewTuple, b, flag;
   T:= RemoveStatesWithIncompleteResponse(RemoveInaccessibleStates(T));
   EqRelation:= Cartesian(States(T),States(T));
   Bad:= [];
@@ -373,39 +409,8 @@ function(T)
                 od;
         od;
   od;
-  Classes:=ShallowCopy(EquivalenceRelationPartition(EquivalenceRelationByPairs(Domain(States(T)),EqRelation)));
-  
-  class := function(q)
-        local j;
-        for j in [1 .. Length(Classes)] do
-                if q in Classes[j] then
-                        return j;
-                fi;
-        od;
-	return fail;
-  end;
-  for i in States(T) do
-  	if class(i)=fail then
-		Add(Classes,[i]);
-	fi;
-  od;
-  for i in Classes do
-  	if 1 in i then
-          initialclass := i;
-        fi;
-  od;
-  Remove(Classes,Position(Classes,initialclass));
-  Classes := Concatenation([initialclass],Classes);
-  Pi:= ShallowCopy(Classes);
-  Lambda := ShallowCopy(Classes);
-  Apply(Pi,x -> TransitionFunction(T)[x[1]]);
-  Apply(Lambda, x-> OutputFunction(T)[x[1]]);
-  for i in Pi do
-        Apply(i,class);
-  od;
-  return Transducer(Length(InputAlphabet(T)),Length(OutputAlphabet(T)),Pi,Lambda);
+  return QuotientTransducer(T,EqRelation);
 end);
-
 
 InstallMethod(IsSurjectiveTransducer, "for a transducer",
 [IsTransducer],
