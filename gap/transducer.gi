@@ -117,7 +117,13 @@ function(AlphSize,NrStates)
 	   Add(Lambda,[]);
 	   for j in [1 .. AlphSize] do
 		Add(Pi[i],Random([1 .. NrStates]));
-		OutputLength:= Random([0 .. 3]);
+		OutputLength:= 0;
+		if not Random([1,2,3,4]) = 1 then
+			OutputLength := OutputLength + 1;
+			while Random([1,2]) = 1 do
+				OutputLength := OutputLength + 1;
+			od;
+		fi;
 		Add(Lambda[i],[]);
 		for k in [1 .. OutputLength] do
 			Add(Lambda[i][j],Random([0 .. AlphSize - 1]));
