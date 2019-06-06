@@ -20,7 +20,8 @@ DeclareRepresentation("IsTransducer", IsComponentObjectRep and
                                               "OutputFunction",
                                               "TransducerFunction"]);
 DeclareOperation("Transducer", [IsPosInt, IsPosInt, IsDenseList, IsDenseList]);
-DeclareOperation("RandomTransducer", [IsPosInt,IsPosInt]);
+DeclareOperation("RandomTransducer", [IsPosInt, IsPosInt]);
+DeclareOperation("RandomBijectiveTransducer",[IsPosInt, IsPosInt]);
 DeclareOperation("TransducerFunction", [IsTransducer, IsDenseList, IsPosInt]);
 DeclareOperation("OutputFunction", [IsTransducer]);
 DeclareOperation("TransitionFunction", [IsTransducer]);

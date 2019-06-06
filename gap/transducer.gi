@@ -133,6 +133,17 @@ function(AlphSize,NrStates)
 	return Transducer(AlphSize,AlphSize,Pi,Lambda);
 end);
 
+InstallMethod(RandomBijectiveTransducer,"gives random bijective transducer of given alphabet size and number of states",[IsPosInt,IsPosInt],
+function(AlphSize,NrStates)
+	local T;
+	T:= RandomTransducer(AlphSize, NrStates);
+	while not ((not IsDegenerateTransducer(T)) and IsInjectiveTransducer(T) and IsSurjectiveTransducer(T)) do
+		T:= RandomTransducer(AlphSize, NrStates);	
+	od;
+	return T;	
+end);
+
+
 InstallMethod(TransducerFunction, "for a transducer, a dense list and a posint",
 [IsTransducer, IsDenseList, IsPosInt],
 function(T, input, state)

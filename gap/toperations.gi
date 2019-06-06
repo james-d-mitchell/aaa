@@ -103,6 +103,9 @@ InstallMethod(RemoveStatesWithIncompleteResponse, "for a transducer",
 [IsTransducer],
 function(T)
   local ntfunc, nofunc, n, x;
+  if IsDegenerateTransducer(T) then
+	return fail;
+  fi;
   ntfunc := [];
   nofunc := [];
   for x in [1 .. NrStates(T) + 1] do
@@ -254,6 +257,9 @@ InstallMethod(IsInjectiveTransducer, "for a transducer",
 [IsTransducer],
 function(T)
   local active, flag, outs, p, pair, pairs, t, tactive, u, v, w, x, y, z;
+  if IsDegenerateTransducer(T) then
+  	return fail;
+  fi;
   active := List(InputAlphabet(T), x -> [[x]]);
   flag := true;
   pairs := [];
@@ -374,11 +380,33 @@ QuotientTransducer := function(T,EqR)
 );
 end;
 
+InstallMethod(IsDegenerateTransducer, "for a transducer",
+[IsTransducer],
+function(T)
+	local Out, D, OutNeigh;
+	Out := States(T);
+	OutNeigh := function(s)
+		local Output, i;
+		Output := [];
+		for i in InputAlphabet(T) do
+			if TransducerFunction(T,[i],s)[1] = [] then
+				Add(Output,TransducerFunction(T,[i],s)[2]);
+			fi;
+		od;
+		return Output;
+	end;
+	Apply(Out, OutNeigh);
+	D := Digraph(Out);
+	return DigraphHasLoops(D) or DigraphGirth(D) < infinity;
+end);
 
 InstallMethod(MinimiseTransducer, "for a transducer",
 [IsTransducer],
 function(T)
   local  x, Bad, EqRelation, i, tuple, NewTuple, b, flag;
+  if IsDegenerateTransducer(T) then
+	return fail;
+  fi;
   T:= RemoveStatesWithIncompleteResponse(RemoveInaccessibleStates(T));
   EqRelation:= Cartesian(States(T),States(T));
   Bad:= [];
@@ -419,6 +447,9 @@ function(T)
   currentblocks, containsantichain, currentword, x, flag, y, minwords, tyx,
   tree, pos, keys, subtree, check, pos2, prefix, block, state, imagekeys,
   minword, answer;
+  if IsDegenerateTransducer(T) then
+	return fail;
+  fi;
   imagetrees := States(T);
   completeblocks := [];
   usefulstates := [1];
