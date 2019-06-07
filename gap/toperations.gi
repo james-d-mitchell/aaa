@@ -466,7 +466,7 @@ InstallMethod(IsSurjectiveTransducer, "for a transducer",
 function(T)
   local usefulstates, prefixcodes, imagetrees, completeblocks, finalimagetree,
   currentblocks, containsantichain, currentword, x, flag, y, minwords, tyx,
-  tree, pos, keys, subtree, check, pos2, prefix, block, state, imagekeys,
+  pos, keys, subtree, check, pos2, prefix, block, state, imagekeys,
   minword, answer;
   if IsDegenerateTransducer(T) then
 	return fail;
@@ -545,21 +545,24 @@ function(T)
         flag := false;
       fi;
     od;
-    for y in prefixcodes[Size(prefixcodes)] do
-      AddSet(usefulstates, TransducerFunction(T, y, x)[2]);
+    for y in prefixcodes[Size(prefixcodes)] do;
+      tyx := TransducerFunction(T, y, x);
+      if not tyx[2] in usefulstates then
+         Add(usefulstates, tyx[2]);
+      fi;
     od;
     imagetrees[x] := [];
     for y in prefixcodes[Size(prefixcodes)] do
       tyx := TransducerFunction(T, y, x);
-      tree := imagetrees[x];
-      pos := Position(List(tree, x -> x[1]), tyx[1]);
-      if  not pos = fail then
-        AddSet(tree[pos][2], tyx[2]);
+      pos := Position(List(imagetrees[x], y -> y[1]), tyx[1]);
+      if not pos = fail then
+        AddSet(imagetrees[x][pos][2], tyx[2]);
       else
-        AddSet(tree, [tyx[1], [tyx[2]]]);
+        AddSet(imagetrees[x], [tyx[1], [tyx[2]]]);
       fi;
     od;
   od;
+ 
   finalimagetree := [[[], [1]]];
   currentblocks := [[[], [[[], [1]]]]];
   keys := [[]];
@@ -572,7 +575,7 @@ function(T)
     od;
     keys := List(finalimagetree, x -> x[1]);
     for state in finalimagetree[Position(keys, block[1])][2] do
-      imagekeys := List(imagetrees[state], x -> x[1]);
+      imagekeys := StructuralCopy(List(imagetrees[state], x -> x[1]));
       for prefix in  imagekeys do
         keys   := List(finalimagetree, x -> x[1]);
         pos := Position(keys, Concatenation(block[1], prefix));
