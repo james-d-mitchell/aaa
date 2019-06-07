@@ -99,6 +99,7 @@ function(T, n)
   return tducer;
 end);
 
+#causes infinite loop if transducer has a state which can only write one infinite word.
 InstallMethod(RemoveStatesWithIncompleteResponse, "for a transducer",
 [IsTransducer],
 function(T)
@@ -253,6 +254,8 @@ function(T)
   return dmy;
 end);
 
+#This transducer causes this code to loop infinitely: Transducer(2 ,2 ,[ [ 3, 3 ], [ 2, 3 ], [ 3, 2 ] ],[ [ [ 0, 1 ], [  ] ], [ [ 1 ], [ 1, 0, 0, 1, 0, 1 ] ], [ [ 1, 1 ], [ 0, 1 ] ] ])
+#Code incorrectly says that this is injective: Transducer(2,2,[ [ 1, 2 ], [ 1, 1 ] ], [ [ [ 0 ], [ 1 ] ], [ [  ], [  ] ] ])
 InstallMethod(IsInjectiveTransducer, "for a transducer",
 [IsTransducer],
 function(T)
@@ -379,6 +382,24 @@ QuotientTransducer := function(T,EqR)
   return Transducer(Length(InputAlphabet(T)),Length(OutputAlphabet(T)),Pi,Lambda
 );
 end;
+
+InstallMethod(TransducerSynchronizingLength, "for a transducer", [IsTransducer],
+function(T)
+	local count, TempT, flag;
+	flag := true;
+	count := -1;
+	while flag do
+		count := count + 1;
+		TempT := QuotientTransducer(T,Filtered(Cartesian(States(T), States(T)),x-> TransitionFunction(T)[x[1]]=TransitionFunction(T)[x[2]]));
+		flag := (States(T) <> States(TempT));
+		T := TempT;
+	od;
+	if States(T) = [1] then 
+		return count;
+	fi;
+	return infinity;
+end);
+
 
 InstallMethod(IsDegenerateTransducer, "for a transducer",
 [IsTransducer],

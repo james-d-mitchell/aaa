@@ -19,6 +19,7 @@ DeclareOperation("RemoveEquivalentStates", [IsTransducer]);
 DeclareAttribute("IsInjectiveTransducer", IsTransducer);
 DeclareAttribute("IsSurjectiveTransducer", IsTransducer);
 DeclareAttribute("EqualImagePrefixes", IsTransducer);
+DeclareAttribute("TransducerSynchronizingLength", IsTransducer);
 DeclareAttribute("IsDegenerateTransducer", IsTransducer);
 DeclareAttribute("MinimiseTransducer", IsTransducer);
 DeclareOperation("\*", [IsTransducer, IsTransducer]);
