@@ -16,6 +16,7 @@ DeclareOperation("RemoveStatesWithIncompleteResponse", [IsTransducer]);
 DeclareOperation("RemoveInaccessibleStates", [IsTransducer]);
 DeclareOperation("CopyTransducerWithInitialState", [IsTransducer, IsPosInt]);
 DeclareOperation("RemoveEquivalentStates", [IsTransducer]);
+DeclareAttribute("BadInjective", IsTransducer);
 DeclareAttribute("IsInjectiveTransducer", IsTransducer);
 DeclareAttribute("IsSurjectiveTransducer", IsTransducer);
 DeclareAttribute("EqualImagePrefixes", IsTransducer);

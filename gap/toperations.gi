@@ -99,14 +99,35 @@ function(T, n)
   return tducer;
 end);
 
-#causes infinite loop if transducer has a state which can only write one infinite word.
+#causes infinite loop if transducer has a state which can only write one infinite word so I added a check for this but check can be very slow.
 InstallMethod(RemoveStatesWithIncompleteResponse, "for a transducer",
 [IsTransducer],
 function(T)
-  local ntfunc, nofunc, n, x;
+  local i, check, s, outputs, word, ntfunc, nofunc, n, x;
   if IsDegenerateTransducer(T) then
 	return fail;
   fi;
+  if Size(OutputAlphabet(T)) = 1 and Size(States(T)=1) then 
+    return fail;
+  fi;
+  word := [1 .. Size(States(T))];
+  for s in States(T) do
+    check := true;
+    outputs := [];
+    for n in [0, 1 .. Size(InputAlphabet(T))^Size(States(T))-1] do
+      for i in [1 .. Size(States(T))] do
+        word[i] := RemInt(n,Size(InputAlphabet(T))^i);
+      od;
+      AddSet(outputs, TransducerFunction(T, word, s)[1]);
+      if Size(outputs) > 1 then
+        check := false;
+        break;
+      fi;
+    od;
+    if check then 
+	return fail;
+    fi;
+  od;
   ntfunc := [];
   nofunc := [];
   for x in [1 .. NrStates(T) + 1] do
@@ -252,6 +273,27 @@ function(T)
     nsr := NrStates(dmy);
   od;
   return dmy;
+end);
+
+InstallMethod(BadInjective, "for a transducer",
+[IsTransducer],
+function(T)
+  local state, x, p1, p2, tuple, prod;
+  prod := Cartesian(InputAlphabet(T),InputAlphabet(T));
+  for state in States(T) do
+    for x in prod do
+      if not x[1] = x[2] then
+         for tuple in Cartesian(prod,prod) do
+            p1:= TransducerFunction(T, Concatenation([x[1]],tuple[1]),state)[1];
+            p2:= TransducerFunction(T, Concatenation([x[2]],tuple[2]),state)[1];
+	    if IsPrefix(p1,p2) or IsPrefix(p2,p1) then
+		return false;
+            fi;
+         od;
+      fi;
+    od;
+  od;
+  return true;
 end);
 
 #This transducer causes this code to loop infinitely: Transducer(2 ,2 ,[ [ 3, 3 ], [ 2, 3 ], [ 3, 2 ] ],[ [ [ 0, 1 ], [  ] ], [ [ 1 ], [ 1, 0, 0, 1, 0, 1 ] ], [ [ 1, 1 ], [ 0, 1 ] ] ])
