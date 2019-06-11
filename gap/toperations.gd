@@ -22,6 +22,7 @@ DeclareAttribute("IsSurjectiveTransducer", IsTransducer);
 DeclareAttribute("EqualImagePrefixes", IsTransducer);
 DeclareAttribute("TransducerSynchronizingLength", IsTransducer);
 DeclareAttribute("IsDegenerateTransducer", IsTransducer);
+DeclareAttribute("IsSynchronousTransducer", IsTransducer);
 DeclareAttribute("MinimiseTransducer", IsTransducer);
 DeclareOperation("\*", [IsTransducer, IsTransducer]);
 DeclareOperation("\^", [IsTransducer, IsPosInt]);

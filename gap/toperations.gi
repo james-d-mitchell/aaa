@@ -99,6 +99,11 @@ function(T, n)
   return tducer;
 end);
 
+InstallMethod(IsSynchronousTransducer, "for a transducer", [IsTransducer],
+function(T)
+  return ForAll(Concatenation(OutputFunction(T)), x -> (Size(x)=1));
+end);
+
 #causes infinite loop if transducer has a state which can only write one infinite word so I added a check for this but check can be very slow.
 InstallMethod(RemoveStatesWithIncompleteResponse, "for a transducer",
 [IsTransducer],
