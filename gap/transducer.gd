@@ -22,6 +22,7 @@ DeclareRepresentation("IsTransducer", IsComponentObjectRep and
 DeclareOperation("Transducer", [IsPosInt, IsPosInt, IsDenseList, IsDenseList]);
 DeclareOperation("RandomTransducer", [IsPosInt, IsPosInt]);
 DeclareOperation("RandomBijectiveTransducer",[IsPosInt, IsPosInt]);
+DeclareOperation("IdentityTransducer",[IsPosInt]);
 DeclareOperation("TransducerFunction", [IsTransducer, IsDenseList, IsPosInt]);
 DeclareOperation("OutputFunction", [IsTransducer]);
 DeclareOperation("TransitionFunction", [IsTransducer]);

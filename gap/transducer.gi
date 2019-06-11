@@ -133,6 +133,12 @@ function(AlphSize,NrStates)
 	return Transducer(AlphSize,AlphSize,Pi,Lambda);
 end);
 
+InstallMethod(IdentityTransducer, "returns identity transducer on given alphabet size",
+[IsPosInt],
+function(AlphSize)
+  return Transducer(AlphSize,AlphSize,[List([1 .. AlphSize], x -> 1)],  [List([0 .. AlphSize - 1], x-> [x])]);
+end);
+
 InstallMethod(RandomBijectiveTransducer,"gives random bijective transducer of given alphabet size and number of states",[IsPosInt,IsPosInt],
 function(AlphSize,NrStates)
 	local T;

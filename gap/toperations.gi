@@ -99,6 +99,9 @@ function(T, n)
   return tducer;
 end);
 
+InstallMethod(\=, "for two transducers",
+[IsTransducer, IsTransducer], OmegaEquivalentTransducers);
+
 InstallMethod(IsSynchronousTransducer, "for a transducer", [IsTransducer],
 function(T)
   return ForAll(Concatenation(OutputFunction(T)), x -> (Size(x)=1));
@@ -468,14 +471,10 @@ function(T)
 	return DigraphHasLoops(D) or DigraphGirth(D) < infinity;
 end);
 
-InstallMethod(MinimiseTransducer, "for a transducer",
-[IsTransducer],
+InstallMethod(CombineOmegaEquivalentStates, "for a transducer",
+ [IsTransducer],
 function(T)
   local  x, Bad, EqRelation, i, tuple, NewTuple, b, flag;
-  if IsDegenerateTransducer(T) then
-	return fail;
-  fi;
-  T:= RemoveStatesWithIncompleteResponse(RemoveInaccessibleStates(T));
   EqRelation:= Cartesian(States(T),States(T));
   Bad:= [];
   for i in InputAlphabet(T) do
@@ -506,6 +505,61 @@ function(T)
         od;
   od;
   return QuotientTransducer(T,EqRelation);
+end);
+
+InstallMethod(IsomorphicInitialTransducers, "for a pair of transducer",
+[IsTransducer, IsTransducer],
+function(T1,T2)
+  local D1, D2, perm, Dtemp, i;
+  if not States(T1) = States(T2) then
+    return false;
+  fi;
+  if not InputAlphabet(T1)=InputAlphabet(T2) then
+    return false;
+  fi;
+  if not OutputAlphabet(T1)= OutputAlphabet(T2) then
+    return false;
+  fi;
+  D1 := List([1 .. Size(States(T1))], x -> [OutputFunction(T1)[x], TransitionFunction(T1)[x]]);
+  D2 := List([1 .. Size(States(T2))], x -> [OutputFunction(T2)[x], TransitionFunction(T2)[x]]);
+  for perm in SymmetricGroup(Size(States(T1))) do
+     if 1^perm = 1 then
+       Dtemp := StructuralCopy(List([1 .. Size(States(T1))],x-> D1[x^perm]));
+       for i in [1 .. Size(Dtemp)] do
+         Apply(Dtemp[i][2], x -> x^perm);
+       od;
+       if Dtemp = D2 then
+         return true;
+       fi;
+     fi;
+  od;
+  return false;
+end);
+
+InstallMethod(OmegaEquivalentTransducers, "for a pair of transducers",
+[IsTransducer,IsTransducer],
+function(T1,T2)
+  local M1,M2;
+  M1:= MinimiseTransducer(T1);
+  M2:= MinimiseTransducer(T2);
+  if M1 = fail or M2 = fail then
+    return fail;
+  fi;
+  return IsomorphicInitialTransducers(M1,M2);
+end);
+
+InstallMethod(MinimiseTransducer, "for a transducer",
+[IsTransducer],
+function(T)
+  local T2;
+  if IsDegenerateTransducer(T) then
+	return fail;
+  fi;
+  T2:=RemoveStatesWithIncompleteResponse(RemoveInaccessibleStates(T));
+  if T2=fail then 
+    return T2;
+  fi;
+  return CombineOmegaEquivalentStates(T2);
 end);
 
 InstallMethod(IsSurjectiveTransducer, "for a transducer",
