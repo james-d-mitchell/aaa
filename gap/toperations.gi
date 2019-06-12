@@ -536,6 +536,21 @@ function(T1,T2)
   return false;
 end);
 
+InstallMethod(Order, "for a transducers", 
+[IsTransducer],
+function(T)
+  local p, id;
+  p:= 1;
+  if not InputAlphabet(T)= OutputAlphabet(T) then
+    return fail;
+  fi;
+  id := IdentityTransducer(Size(InputAlphabet(T)));
+  while not T^p=id do
+    p:= p+1;
+  od;
+  return p;
+end);
+
 InstallMethod(OmegaEquivalentTransducers, "for a pair of transducers",
 [IsTransducer,IsTransducer],
 function(T1,T2)

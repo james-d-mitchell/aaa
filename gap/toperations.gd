@@ -26,6 +26,7 @@ DeclareAttribute("IsSynchronousTransducer", IsTransducer);
 DeclareOperation("IsomorphicInitialTransducers",[IsTransducer, IsTransducer]);
 DeclareOperation("OmegaEquivalentTransducers",[IsTransducer, IsTransducer]);
 DeclareAttribute("CombineOmegaEquivalentStates", IsTransducer);
+DeclareAttribute("Order", IsTransducer);
 DeclareAttribute("MinimiseTransducer", IsTransducer);
 DeclareOperation("\*", [IsTransducer, IsTransducer]);
 DeclareOperation("\=", [IsTransducer, IsTransducer]);
