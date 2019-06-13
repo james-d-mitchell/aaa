@@ -283,92 +283,60 @@ function(T)
   return dmy;
 end);
 
-InstallMethod(BadInjective, "for a transducer",
-[IsTransducer],
-function(T)
-  local state, x, p1, p2, tuple, prod;
-  prod := Cartesian(InputAlphabet(T),InputAlphabet(T));
-  for state in States(T) do
-    for x in prod do
-      if not x[1] = x[2] then
-         for tuple in Cartesian(prod,prod) do
-            p1:= TransducerFunction(T, Concatenation([x[1]],tuple[1]),state)[1];
-            p2:= TransducerFunction(T, Concatenation([x[2]],tuple[2]),state)[1];
-	    if IsPrefix(p1,p2) or IsPrefix(p2,p1) then
-		return false;
-            fi;
-         od;
-      fi;
-    od;
-  od;
-  return true;
-end);
-
-#This transducer causes this code to loop infinitely: Transducer(2 ,2 ,[ [ 3, 3 ], [ 2, 3 ], [ 3, 2 ] ],[ [ [ 0, 1 ], [  ] ], [ [ 1 ], [ 1, 0, 0, 1, 0, 1 ] ], [ [ 1, 1 ], [ 0, 1 ] ] ])
-#Code incorrectly says that this is injective: Transducer(2,2,[ [ 1, 2 ], [ 1, 1 ] ], [ [ [ 0 ], [ 1 ] ], [ [  ], [  ] ] ])
 InstallMethod(IsInjectiveTransducer, "for a transducer",
 [IsTransducer],
 function(T)
-  local active, flag, outs, p, pair, pairs, t, tactive, u, v, w, x, y, z;
+  local BadAut, S, CompDetAutIntersect, A, NrStates, Alph, TMat, s, out, i, j, x, TMat2, NewNrStates, Languages;
   if IsDegenerateTransducer(T) then
   	return fail;
   fi;
-  active := List(InputAlphabet(T), x -> [[x]]);
-  flag := true;
-  pairs := [];
+  
+  CompDetAutIntersect := function(D1,D2)
+    local D3, S1, S2, S3;
+    S1 := [1 .. NumberStatesOfAutomaton(D1)];
+    S2 := [1 .. NumberStatesOfAutomaton(D2)];
+    SubtractSet(S1, FinalStatesOfAutomaton(D1));
+    SubtractSet(S2, FinalStatesOfAutomaton(D2));
+    SetFinalStatesOfAutomaton(D1,S1);
+    SetFinalStatesOfAutomaton(D2,S2); 
+    D3 := NullCompletionAutomaton(RatExpToAut(FAtoRatExp(UnionAutomata(D1,D2))));
+    S3 := [1 .. NumberStatesOfAutomaton(D3)];
+    SubtractSet(S3, FinalStatesOfAutomaton(D3));
+    SetFinalStatesOfAutomaton(D3,S3);
+    return D3;
+ end;
 
-  while flag do
-    tactive := List(InputAlphabet(T), x -> []);
-
-    for w in InputAlphabet(T) do
-      for u in active[w + 1] do
-        for v in InputAlphabet(T) do
-          p := Concatenation(u, [v]);
-          Add(tactive[w + 1], p);
-        od;
+  A:= ImageAutomaton(T);
+  NrStates := NumberStatesOfAutomaton(A);
+  Alph     := AlphabetOfAutomatonAsList(A);
+  TMat     := TransitionMatrixOfAutomaton(A);
+ 
+  for s in States(T) do
+    Languages := [];
+    for x in InputAlphabet(T) do
+      out := TransducerFunction(T,[x],s)[1];
+      NewNrStates := NrStates + 1 + Size(out);
+      TMat2 := StructuralCopy(TMat);
+      for j in [1 .. Size(out)-1] do 
+        TMat2[out[j]+1][NrStates + j] := [NrStates + j + 1];
+      od;
+      if Size(out) > 0 then
+        TMat2[out[Size(out)]+1][NrStates + Size(out)] := [TransducerFunction(T,[x],s)[2]];
+        TMat2[Size(Alph)][NewNrStates] := [NrStates + 1];
+      else;
+        TMat2[Size(Alph)][NewNrStates] := [TransducerFunction(T,[x],s)[2]];
+      fi;
+     BadAut := Automaton("epsilon",NewNrStates, Alph, TMat2, [NewNrStates],[1 .. NewNrStates]);
+     Add(Languages,NullCompletionAutomaton(RatExpToAut(FAtoRatExp(BadAut))));    
+    od;
+    for i in [1 .. Size(InputAlphabet(T))] do
+      for j in [i+1 .. Size(InputAlphabet(T))] do
+        if not IsFiniteRegularLanguage(CompDetAutIntersect(Languages[i],Languages[j])) then
+          SetIsInjectiveTransducer(T,false);
+          return false;
+        fi;
       od;
     od;
-
-    active := ShallowCopy(tactive);
-    outs := List(active, x -> List(x, y -> TransducerFunction(T, y, 1)));
-    tactive := List(InputAlphabet(T), x -> []);
-
-    for x in [1 .. Size(outs)] do
-      for y in [x + 1 .. Size(outs)] do
-        for z in [1 .. Size(outs[x])] do
-          for t in [1 .. Size(outs[y])] do
-            if IsPrefix(outs[x][z][1], outs[y][t][1]) or
-                IsPrefix(outs[y][t][1], outs[x][z][1]) then
-
-              AddSet(tactive[x], active[x][z]);
-              AddSet(tactive[y], active[y][t]);
-
-              if IsPrefix(outs[x][z][1], outs[y][t][1]) then
-                pair := [Minus(outs[x][z][1], outs[y][t][1]), [outs[x][z][2],
-                                                               outs[y][t][2]]];
-              else
-                pair := [Minus(outs[y][t][1], outs[x][z][1]), [outs[y][t][2],
-                                                               outs[x][z][2]]];
-              fi;
-
-              if pair in pairs then
-                SetEqualImagePrefixes(T, [active[x][z], active[y][t]]);
-                SetIsInjectiveTransducer(T, false);
-                return false;
-              else
-                Add(pairs, pair);
-              fi;
-            fi;
-          od;
-        od;
-      od;
-    od;
-
-    active := ShallowCopy(tactive);
-
-    if ForAll(active, x -> IsEmpty(x)) then
-      flag := false;
-    fi;
   od;
 
   SetIsInjectiveTransducer(T, true);
@@ -450,6 +418,39 @@ function(T)
 	return infinity;
 end);
 
+InstallMethod(ImageAutomaton, "for a transducer", 
+[IsTransducer],
+function(T)
+  local numberofstates, i, transitiontable, currentnewstate, j, k;
+  numberofstates := Size(States(T));
+  for i in Concatenation(OutputFunction(T)) do
+    if not Size(i)=0 then
+      numberofstates := numberofstates + Size(i) - 1;
+    fi;
+  od;
+  transitiontable := List([1 .. Size(OutputAlphabet(T))+1], x -> List([1 .. numberofstates], y-> []));
+  currentnewstate := Size(States(T)) + 1;
+  for i in States(T) do
+    for j in InputAlphabet(T) do
+      if Size(OutputFunction(T)[i][j+1]) > 1 then
+         Add(transitiontable[OutputFunction(T)[i][j+1][1]+1][i],currentnewstate);
+         for k in [2 .. Size(OutputFunction(T)[i][j+1])-1] do
+           AddSet(transitiontable[OutputFunction(T)[i][j+1][k]+1][currentnewstate],currentnewstate + 1);
+           currentnewstate := currentnewstate + 1;
+         od;
+           AddSet(transitiontable[OutputFunction(T)[i][j+1][Size(OutputFunction(T)[i][j+1])]+1][currentnewstate],TransducerFunction(T,[j],i)[2]);
+           currentnewstate := currentnewstate + 1;
+      fi;
+      if Size(OutputFunction(T)[i][j+1]) = 1 then 
+          AddSet(transitiontable[OutputFunction(T)[i][j+1][1]+1][i],TransducerFunction(T,[j],i)[2]);
+      fi;
+      if Size(OutputFunction(T)[i][j+1]) < 1 then 
+          AddSet(transitiontable[Size(OutputAlphabet(T))+1][i],TransducerFunction(T,[j],i)[2]);
+      fi;
+    od;
+  od;
+  return Automaton("epsilon", numberofstates, Concatenation(List(OutputAlphabet(T),x->String(x)[1]),"@"), transitiontable, [1], [1 .. numberofstates]);
+end);
 
 InstallMethod(IsDegenerateTransducer, "for a transducer",
 [IsTransducer],

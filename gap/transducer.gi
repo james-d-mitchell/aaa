@@ -143,7 +143,7 @@ InstallMethod(RandomBijectiveTransducer,"gives random bijective transducer of gi
 function(AlphSize,NrStates)
 	local T;
 	T:= RandomTransducer(AlphSize, NrStates);
-	while not ((not IsDegenerateTransducer(T)) and BadInjective(T) and IsSurjectiveTransducer(T)) do
+	while not ((not IsDegenerateTransducer(T)) and IsInjectiveTransducer(T) and IsSurjectiveTransducer(T)) do
 		T:= RandomTransducer(AlphSize, NrStates);	
 	od;
 	return T;	
