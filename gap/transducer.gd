@@ -25,6 +25,7 @@ DeclareOperation("RandomBijectiveTransducer",[IsPosInt, IsPosInt]);
 DeclareOperation("IdentityTransducer",[IsPosInt]);
 DeclareOperation("TransducerFunction", [IsTransducer, IsDenseList, IsPosInt]);
 DeclareOperation("OutputFunction", [IsTransducer]);
+DeclareOperation("GeneratedTransducers", [IsPosInt]);
 DeclareOperation("TransitionFunction", [IsTransducer]);
 DeclareOperation("InputAlphabet", [IsTransducer]);
 DeclareOperation("OutputAlphabet", [IsTransducer]);

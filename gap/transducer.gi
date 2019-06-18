@@ -133,6 +133,18 @@ function(AlphSize,NrStates)
 	return Transducer(AlphSize,AlphSize,Pi,Lambda);
 end);
 
+InstallMethod(GeneratedTransducers,
+ "returns one of the bijective transducers which has been generated",
+[IsPosInt],
+function(pos)
+  local text, stream, data;
+  stream := InputTextFile("BijectiveTransducers");
+  text := ReadAll(stream);
+  data := EvalString(SplitString(text, "\n")[pos]);
+  return Transducer(2,2, data[1],data[2]);
+end);
+
+
 InstallMethod(IdentityTransducer, "returns identity transducer on given alphabet size",
 [IsPosInt],
 function(AlphSize)

@@ -111,7 +111,7 @@ end);
 InstallMethod(RemoveStatesWithIncompleteResponse, "for a transducer",
 [IsTransducer],
 function(T)
-  local i, check, s, outputs, word, ntfunc, nofunc, n, x;
+  local i, check, s, output, outputs, word, ntfunc, nofunc, n, x;
   if IsDegenerateTransducer(T) then
 	return fail;
   fi;
@@ -122,14 +122,15 @@ function(T)
   for s in States(T) do
     check := true;
     outputs := [];
-    for n in [0, 1 .. Size(InputAlphabet(T))^Size(States(T))-1] do
-      for i in [1 .. Size(States(T))] do
-        word[i] := RemInt(n,Size(InputAlphabet(T))^i);
-      od;
-      AddSet(outputs, TransducerFunction(T, word, s)[1]);
-      if Size(outputs) > 1 then
-        check := false;
-        break;
+    for word in IteratorOfTuples(InputAlphabet(T),Size(States(T))) do
+      output := TransducerFunction(T, word, s)[1];
+      if Size(outputs) = 0 then
+        Add(outputs, output);
+      else
+        if not IsPrefix(output, outputs[1]) and not IsPrefix(outputs[1],output) then
+          check := false;
+          break;
+        fi;
       fi;
     od;
     if check then 
