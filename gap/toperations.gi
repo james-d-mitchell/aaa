@@ -287,20 +287,22 @@ end);
 InstallMethod(IsInjectiveTransducer, "for a transducer",
 [IsTransducer],
 function(T)
-  local BadAut, S, CompDetAutIntersect, A, NrStates, Alph, TMat, s, out, i, j, x, TMat2, NewNrStates, Languages;
+  local BadAut, S, CompDetAutIntersect, A, StatesNr, Alph, TMat, s, out, i, j, x, TMat2, NewNrStates, Languages;
   if IsDegenerateTransducer(T) then
   	return fail;
   fi;
   
   CompDetAutIntersect := function(D1,D2)
-    local D3, S1, S2, S3;
+    local DC1, DC2, D3, S1, S2, S3;
     S1 := [1 .. NumberStatesOfAutomaton(D1)];
     S2 := [1 .. NumberStatesOfAutomaton(D2)];
     SubtractSet(S1, FinalStatesOfAutomaton(D1));
     SubtractSet(S2, FinalStatesOfAutomaton(D2));
-    SetFinalStatesOfAutomaton(D1,S1);
-    SetFinalStatesOfAutomaton(D2,S2); 
-    D3 := NullCompletionAutomaton(RatExpToAut(FAtoRatExp(UnionAutomata(D1,D2))));
+    DC1 := CopyAutomaton(D1);
+    DC2 := CopyAutomaton(D2);
+    SetFinalStatesOfAutomaton(DC1,S1);
+    SetFinalStatesOfAutomaton(DC2,S2); 
+    D3 := NullCompletionAutomaton(RatExpToAut(FAtoRatExp(UnionAutomata(DC1,DC2))));
     S3 := [1 .. NumberStatesOfAutomaton(D3)];
     SubtractSet(S3, FinalStatesOfAutomaton(D3));
     SetFinalStatesOfAutomaton(D3,S3);
@@ -308,7 +310,7 @@ function(T)
  end;
 
   A:= ImageAutomaton(T);
-  NrStates := NumberStatesOfAutomaton(A);
+  StatesNr := NumberStatesOfAutomaton(A);
   Alph     := AlphabetOfAutomatonAsList(A);
   TMat     := TransitionMatrixOfAutomaton(A);
  
@@ -316,14 +318,14 @@ function(T)
     Languages := [];
     for x in InputAlphabet(T) do
       out := TransducerFunction(T,[x],s)[1];
-      NewNrStates := NrStates + 1 + Size(out);
+      NewNrStates := StatesNr + 1 + Size(out);
       TMat2 := StructuralCopy(TMat);
       for j in [1 .. Size(out)-1] do 
-        TMat2[out[j]+1][NrStates + j] := [NrStates + j + 1];
+        TMat2[out[j]+1][StatesNr + j] := [StatesNr + j + 1];
       od;
       if Size(out) > 0 then
-        TMat2[out[Size(out)]+1][NrStates + Size(out)] := [TransducerFunction(T,[x],s)[2]];
-        TMat2[Size(Alph)][NewNrStates] := [NrStates + 1];
+        TMat2[out[Size(out)]+1][StatesNr + Size(out)] := [TransducerFunction(T,[x],s)[2]];
+        TMat2[Size(Alph)][NewNrStates] := [StatesNr + 1];
       else;
         TMat2[Size(Alph)][NewNrStates] := [TransducerFunction(T,[x],s)[2]];
       fi;
@@ -536,6 +538,29 @@ function(T1,T2)
      fi;
   od;
   return false;
+end);
+
+InstallMethod(IsMinimalTransducer, "for a Transducer",
+[IsTransducer],
+function(T)
+  local min;
+  min := MinimiseTransducer(T);
+  if min = fail then
+    return fail;
+  fi;
+  return IsomorphicInitialTransducers(T,min);
+end);
+
+InstallMethod(IsBijectiveTransducer, "for a transducer",
+[IsTransducer],
+function(T)
+  return not IsDegenerateTransducer(T) and IsInjectiveTransducer(T) and IsSurjectiveTransducer(T);
+end);
+
+InstallMethod(EqualTransducers, "for a pair of transducers",
+[IsTransducer, IsTransducer],
+function(T1,T2)
+return OutputFunction(T1)=OutputFunction(T2) and TransitionFunction(T1)=TransitionFunction(T2);
 end);
 
 InstallMethod(Order, "for a transducers", 

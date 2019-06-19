@@ -144,6 +144,31 @@ function(pos)
   return Transducer(2,2, data[1],data[2]);
 end);
 
+InstallMethod(NrTransducers, "returns the number of transducers (with alphabet size 2) with given number of states and maximum output length",
+[IsPosInt,IsPosInt],
+function(StateNr, OutNr)
+  return (StateNr*(2^(OutNr + 1) - 1))^(StateNr * 2);
+end);
+
+InstallMethod(TransducerByNumber,
+ "returns the transducer with given number of states and maximum output size that corresponds to given number",
+[IsPosInt, IsPosInt, IsPosInt],
+function(StateNr, OutNr, TNr)
+  local NrWords, TransNr, i, DdigitNbaseM, Pi, Lambda, Expansion;
+  TransNr := TNr - 1;
+  DdigitNbaseM := function(d,n,m)
+     return List([0 .. (d-1)],x-> Int(RemInt(n,m^(x+1))/(m^x)));
+  end;
+  NrWords := 2^(OutNr + 1)-1;
+  Expansion :=  DdigitNbaseM(StateNr * 2, TransNr, StateNr * NrWords);
+  Pi := List([1 .. StateNr], x-> [Int(Expansion[2*x -1 ]/NrWords) + 1,Int(Expansion[2*x]/NrWords) + 1]);
+  Lambda := List([1 .. StateNr], x-> [RemInt(Expansion[2*x - 1],NrWords),RemInt(Expansion[2*x],NrWords)]);
+  for i in [1 .. StateNr] do
+    Apply(Lambda[i], x-> DdigitNbaseM(LogInt(x+1,2),x+1-2^LogInt(x+1,2),2));
+  od;
+  return Transducer(2,2, Pi, Lambda);
+end);
+
 
 InstallMethod(IdentityTransducer, "returns identity transducer on given alphabet size",
 [IsPosInt],

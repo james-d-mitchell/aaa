@@ -27,6 +27,8 @@ DeclareOperation("TransducerFunction", [IsTransducer, IsDenseList, IsPosInt]);
 DeclareOperation("OutputFunction", [IsTransducer]);
 DeclareOperation("GeneratedTransducers", [IsPosInt]);
 DeclareOperation("TransitionFunction", [IsTransducer]);
+DeclareOperation("NrTransducers", [IsPosInt, IsPosInt]);
+DeclareOperation("TransducerByNumber", [IsPosInt, IsPosInt, IsPosInt]);
 DeclareOperation("InputAlphabet", [IsTransducer]);
 DeclareOperation("OutputAlphabet", [IsTransducer]);
 DeclareOperation("States", [IsTransducer]);
