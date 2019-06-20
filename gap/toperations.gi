@@ -224,6 +224,29 @@ function(T, i)
   return Transducer(NrInputSymbols(T), NrOutputSymbols(T), newq, newl);
 end);
 
+InstallMethod(IsSynchronizingTransducer, "for a transducer",
+[IsTransducer],
+function(T)
+  return TransducerSynchronizingLength(T)<infinity;
+end);
+
+InstallMethod(IsBisynchronizingTransducer, "for a transducer",
+[IsTransducer],
+function(T)
+  return IsBijectiveTransducer(T) and IsSynchronizingTransducer(T) and IsSynchronizingTransducer(InverseTransducer(T));
+end);
+
+InstallMethod(TransducerCore, "for a transducer",
+[IsTransducer],
+function(T)
+  local SLen;
+  SLen := TransducerSynchronizingLength(T);
+  if SLen = infinity then
+    return fail;
+  fi;
+  return RemoveInaccessibleStates(CopyTransducerWithInitialState(T,TransducerFunction(T,ListWithIdenticalEntries(0,SLen),1)[2]));
+end);
+
 InstallMethod(RemoveEquivalentStates, "for a transducer",
 [IsTransducer],
 function(T)
@@ -406,16 +429,17 @@ end;
 
 InstallMethod(TransducerSynchronizingLength, "for a transducer", [IsTransducer],
 function(T)
-	local count, TempT, flag;
+	local count, CopyT, TempT, flag;
 	flag := true;
+        CopyT := CopyTransducerWithInitialState(T,1);
 	count := -1;
 	while flag do
 		count := count + 1;
-		TempT := QuotientTransducer(T,Filtered(Cartesian(States(T), States(T)),x-> TransitionFunction(T)[x[1]]=TransitionFunction(T)[x[2]]));
-		flag := (States(T) <> States(TempT));
-		T := TempT;
+		TempT := QuotientTransducer(CopyT,Filtered(Cartesian(States(CopyT), States(CopyT)),x-> TransitionFunction(CopyT)[x[1]]=TransitionFunction(CopyT)[x[2]]));
+		flag := (States(CopyT) <> States(TempT));
+		CopyT := TempT;
 	od;
-	if States(T) = [1] then 
+	if States(CopyT) = [1] then 
 		return count;
 	fi;
 	return infinity;
