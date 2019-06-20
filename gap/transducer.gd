@@ -29,6 +29,7 @@ DeclareOperation("GeneratedTransducers", [IsPosInt]);
 DeclareOperation("TransitionFunction", [IsTransducer]);
 DeclareOperation("NrTransducers", [IsPosInt, IsPosInt]);
 DeclareOperation("TransducerByNumber", [IsPosInt, IsPosInt, IsPosInt]);
+DeclareOperation("NumberByTransducer", [IsPosInt, IsPosInt, IsTransducer]);
 DeclareOperation("InputAlphabet", [IsTransducer]);
 DeclareOperation("OutputAlphabet", [IsTransducer]);
 DeclareOperation("States", [IsTransducer]);
