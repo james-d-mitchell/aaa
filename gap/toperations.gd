@@ -33,6 +33,8 @@ DeclareOperation("IsomorphicInitialTransducers",[IsTransducer, IsTransducer]);
 DeclareOperation("IsomorphicTransducers", [IsTransducer, IsTransducer]);
 DeclareOperation("EqualTransducers",[IsTransducer, IsTransducer]);
 DeclareOperation("OmegaEquivalentTransducers",[IsTransducer, IsTransducer]);
+DeclareOperation("CoreProduct", [IsTransducer, IsTransducer]);
+DeclareAttribute("IsInV", IsTransducer);
 DeclareAttribute("CombineEquivalentStates", IsTransducer);
 DeclareAttribute("Order", IsTransducer);
 DeclareAttribute("ImageAutomaton",IsTransducer);

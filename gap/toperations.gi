@@ -259,7 +259,7 @@ function(T)
   if SLen = infinity then
     return fail;
   fi;
-  return RemoveInaccessibleStates(CopyTransducerWithInitialState(T,TransducerFunction(T,ListWithIdenticalEntries(0,SLen),1)[2]));
+  return RemoveInaccessibleStates(CopyTransducerWithInitialState(T,TransducerFunction(T,ListWithIdenticalEntries(SLen,0),1)[2]));
 end);
 
 InstallMethod(RemoveEquivalentStates, "for a transducer",
@@ -854,3 +854,16 @@ function(T)
    tinverse := InverseTransducer(T);
    return IsSynchronizingTransducer(T) and IsLipschitzTransducer(T) and IsSynchronizingTransducer(tinverse) and IsLipschitzTransducer(tinverse);
 end);
+
+InstallMethod(IsInV, "for a transducer",[IsTransducer],T-> IsBijectiveTransducer(T) and TransducerCore(MinimiseTransducer(T))=T^0);
+
+InstallMethod(CoreProduct, "for a transducer", [IsTransducer, IsTransducer], 
+function(C1,C2)
+  local M;
+  M := MinimiseTransducer(C1*C2);
+  if M = fail then
+    return M;
+  fi;
+  return TransducerCore(MinimiseTransducer(C1*C2));
+end);
+
