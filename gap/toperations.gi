@@ -88,14 +88,29 @@ InstallMethod(\*, "for two transducers",
 TransducerProduct);
 
 InstallMethod(\^, "for a transducer and a positive integer",
-[IsTransducer, IsPosInt],
+[IsTransducer, IsInt],
 function(T, n)
-  local tducer, x;
+  local flag, tducer, x;
+  flag := false;
+  if n = 0 then
+    if InputAlphabet(T) = OutputAlphabet(T) then
+       return IdentityTransducer(Size(InputAlphabet(T)));
+    fi;
+  fi;
+  if n<0 then
+    if not IsBijectiveTransducer(T) then 
+      return fail;
+    fi;
+    flag := true;
+  fi;
   tducer := CopyTransducerWithInitialState(T, 1);
 
   for x in [1 .. n - 1] do
     tducer := tducer * T;
   od;
+  if flag then
+    tducer := InverseTransducer(tducer);
+  fi;
   return tducer;
 end);
 
