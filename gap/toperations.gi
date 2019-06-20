@@ -800,3 +800,36 @@ function(T)
   SetIsSurjectiveTransducer(T, answer);
   return answer;
 end);
+
+
+InstallMethod(IsLipschitzTransducer, "for a transducer",
+[IsTransducer],
+function(T)
+  local s, i, j, output;
+  for s in States(T) do;
+    for i in Tuples(InputAlphabet(T),Size(States(T))) do
+      for j in [1 .. Size(i)] do
+        output := TransducerFunction(T,i{[1 .. j]},s);
+        if output[2] = s then 
+             if Size(output[1]) <> j then
+               return false;
+             fi;
+             break;
+        fi;
+      od;
+    od;
+  od;
+  return true;
+end);
+
+
+InstallMethod(IsInLB, "for a transducer",
+[IsTransducer],
+function(T)
+   local tinverse;
+   if not IsBijectiveTransducer(T) then
+     return false;
+   fi;
+   tinverse := InverseTransducer(T);
+   return IsSynchronizingTransducer(T) and IsLipschitzTransducer(T) and IsSynchronizingTransducer(tinverse) and IsLipschitzTransducer(tinverse);
+end);
