@@ -514,7 +514,7 @@ function(T)
 	return DigraphHasLoops(D) or DigraphGirth(D) < infinity;
 end);
 
-InstallMethod(CombineOmegaEquivalentStates, "for a transducer",
+InstallMethod(CombineEquivalentStates, "for a transducer",
  [IsTransducer],
 function(T)
   local  x, Bad, EqRelation, i, tuple, NewTuple, b, flag;
@@ -579,6 +579,12 @@ function(T1,T2)
   return false;
 end);
 
+InstallMethod(IsomorphicTransducers, "for a pair of transducers",
+[IsTransducer,IsTransducer],
+function(T1,T2)
+  return ForAny(States(T2),x-> IsomorphicInitialTransducers(T1,CopyTransducerWithInitialState(T2,x)));
+end);
+
 InstallMethod(IsMinimalTransducer, "for a Transducer",
 [IsTransducer],
 function(T)
@@ -640,7 +646,7 @@ function(T)
   if T2=fail then 
     return T2;
   fi;
-  return CombineOmegaEquivalentStates(T2);
+  return CombineEquivalentStates(T2);
 end);
 
 InstallMethod(IsSurjectiveTransducer, "for a transducer",
