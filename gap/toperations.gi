@@ -87,6 +87,15 @@ InstallMethod(\*, "for two transducers",
 [IsTransducer, IsTransducer],
 TransducerProduct);
 
+InstallMethod(\^, "for a transducer and a bijective transducer",
+[IsTransducer, IsTransducer],
+function(T1,T2)
+  if not IsBijectiveTransducer(T2) then
+    return fail;
+  fi;
+  return T2^-1 * T1 * T2;
+end);
+
 InstallMethod(\^, "for a transducer and a positive integer",
 [IsTransducer, IsInt],
 function(T, n)

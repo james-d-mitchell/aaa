@@ -41,3 +41,4 @@ DeclareAttribute("ImageAutomaton",IsTransducer);
 DeclareAttribute("MinimiseTransducer", IsTransducer);
 DeclareOperation("\*", [IsTransducer, IsTransducer]);
 DeclareOperation("\^", [IsTransducer, IsInt]);
+DeclareOperation("\^", [IsTransducer, IsTransducer]);
