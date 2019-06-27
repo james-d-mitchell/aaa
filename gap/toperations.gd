@@ -39,6 +39,7 @@ DeclareAttribute("CombineEquivalentStates", IsTransducer);
 DeclareAttribute("Order", IsTransducer);
 DeclareAttribute("ImageAutomaton",IsTransducer);
 DeclareAttribute("MinimiseTransducer", IsTransducer);
+DeclareAttribute("HasClopenImage", IsTransducer);
 DeclareOperation("\*", [IsTransducer, IsTransducer]);
 DeclareOperation("\^", [IsTransducer, IsInt]);
 DeclareOperation("\^", [IsTransducer, IsTransducer]);

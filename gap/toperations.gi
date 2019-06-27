@@ -331,6 +331,21 @@ function(T)
   return dmy;
 end);
 
+InstallMethod(HasClopenImage, "for a transducer",
+[IsTransducer],
+function(T)
+  local A, NrS, Pairs, MinCircuits;
+  A  := MinimalAutomaton(ImageAutomaton(T));
+  NrS  := NumberStatesOfAutomaton(A);
+  if NrS = 1 then 
+    return true;
+  fi;
+  Pairs := AutomatonAllPairsPaths(A);
+  MinCircuits := Set(List([1 .. NrS],x-> Pairs[x][x]));
+  return MinCircuits = [[],List([1 .. NrS],y-> [y])];
+end);
+
+
 InstallMethod(IsInjectiveTransducer, "for a transducer",
 [IsTransducer],
 function(T)
