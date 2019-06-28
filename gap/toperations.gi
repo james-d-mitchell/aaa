@@ -852,3 +852,6 @@ InstallMethod(IsMinimalTransducer, "for a transducer",
 function(T)
   return IsomorphicInitialTransducers(T, MinimalTransducer(T));
 end);
+
+InstallMethod(IsSynchronousTransducer, "for a transducer",
+[IsTransducer], T -> ForAll(OutputFunction(T), x-> ForAll(x, y -> Size(y)=1)));
