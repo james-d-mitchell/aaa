@@ -943,3 +943,15 @@ InstallMethod(IsomorphicTransducers, "for a pair of transducers",
 function(T1,T2)
   return ForAny(States(T2),x-> IsomorphicInitialTransducers(T1,CopyTransducerWithInitialState(T2,x)));
 end);
+
+InstallMethod(TransducerCore, "for a transducer",
+[IsTransducer],
+function(T)
+  local SLen;
+  SLen := TransducerSynchronizingLength(T);
+  if SLen = infinity then
+    ErrorNoReturn("aaa: TransducerCore: usage,\n",
+                  "the transducer must be synchronizing ");
+  fi;
+  return RemoveInaccessibleStates(CopyTransducerWithInitialState(T,TransducerFunction(T,ListWithIdenticalEntries(SLen,0),1)[2]));
+end);
