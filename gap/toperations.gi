@@ -683,3 +683,75 @@ function(T)
 	D := Digraph(Out);
 	return DigraphHasLoops(D) or DigraphGirth(D) < infinity;
 end);
+
+QuotientTransducer := function(T,EqR)
+  local Classes, class, i, Pi, Lambda, initialclass;
+  Classes:=ShallowCopy(EquivalenceRelationPartition(EquivalenceRelationByPairs(Domain(States(T)),EqR)));
+
+  class := function(q)
+        local j;
+        for j in [1 .. Length(Classes)] do
+                if q in Classes[j] then
+                        return j;
+                fi;
+        od;
+	return fail;
+  end;
+  for i in States(T) do
+	if class(i)=fail then
+		Add(Classes,[i]);
+	fi;
+  od;
+  for i in Classes do
+	if 1 in i then
+          initialclass := i;
+        fi;
+  od;
+  Remove(Classes,Position(Classes,initialclass));
+  Classes := Concatenation([initialclass],Classes);
+  Pi:= ShallowCopy(Classes);
+  Lambda := ShallowCopy(Classes);
+  Apply(Pi,x -> TransitionFunction(T)[x[1]]);
+  Apply(Lambda, x-> OutputFunction(T)[x[1]]);
+  for i in Pi do
+        Apply(i,class);
+  od;
+  return Transducer(Length(InputAlphabet(T)),Length(OutputAlphabet(T)),Pi,Lambda
+);
+end;
+
+InstallMethod(CombineEquivalentStates, "for a transducer",
+ [IsTransducer],
+function(T)
+  local  x, Bad, EqRelation, i, tuple, NewTuple, b, flag;
+  EqRelation:= UnorderedTuples(States(T), 2);
+  Bad:= [];
+  for i in InputAlphabet(T) do
+        for tuple in EqRelation do
+                if TransducerFunction(T,[i],tuple[1])[1] <> TransducerFunction(T,[i],tuple[2])[1] then
+                        if not tuple in Bad then
+				Add(Bad,tuple);
+			fi;
+                fi;
+        od;
+  od;
+  for b in Bad do
+        Remove(EqRelation,Position(EqRelation,b));
+  od;
+  flag := true;
+  while flag do
+        flag := false;
+        for tuple in EqRelation do
+                for i in InputAlphabet(T) do
+                        NewTuple := [TransducerFunction(T,[i],tuple[1])[2],TransducerFunction(T,[i],tuple[2])[2]];
+                        if not NewTuple in EqRelation then
+                                Remove(EqRelation,Position(EqRelation,tuple));
+                                Remove(EqRelation,Position(EqRelation,[tuple[2],tuple[1]]));
+                                flag:=true;
+                                break;
+                        fi;
+                od;
+        od;
+  od;
+  return QuotientTransducer(T,EqRelation);
+end);
