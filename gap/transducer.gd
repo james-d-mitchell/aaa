@@ -31,3 +31,4 @@ DeclareOperation("NrOutputSymbols", [IsTransducer]);
 DeclareOperation("NrInputSymbols", [IsTransducer]);
 DeclareOperation("IdentityTransducer", [IsPosInt]);
 DeclareOperation("RandomTransducer", [IsPosInt, IsPosInt]);
+DeclareOperation("TransducerByNumber", [IsPosInt, IsPosInt, IsPosInt]);
