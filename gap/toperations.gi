@@ -959,3 +959,8 @@ end);
 InstallMethod(IsCoreTransducer, "for a transducer",
 [IsTransducer], T -> IsSynchronizingTransducer(T)
 and IsomorphicTransducers(T, TransducerCore(T)));
+
+InstallMethod(CoreProduct, "for a pair of transducers", [IsTransducer, IsTransducer],
+function(C1,C2)
+  return TransducerCore(MinimalTransducer(C1*C2));
+end);
