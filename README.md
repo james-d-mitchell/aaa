@@ -6,3 +6,5 @@
 This is a GAP package that introduces algorithms for asynchronous automata.
 You can download GAP from https://www.gap-system.org/
 and place this package in the pkg directory.
+
+To build the manual type AaaMakeDoc(); into GAP, having already loaded aaa.
