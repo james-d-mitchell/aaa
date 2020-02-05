@@ -4,7 +4,7 @@
 set -e
 
 ################################################################################
-# Compile Digraphs and install Digraphs lib
+# Compile Aaa and install Aaa lib
 if [ "$SUITE" != "lint" ]; then
   echo -e "\nCompiling the Aaa package..."
   cd $HOME/gap/pkg/aaa
