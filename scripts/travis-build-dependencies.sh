@@ -8,9 +8,7 @@ if [ "$SUITE" != "test" ] && [ "$SUITE" != "coverage" ] && [ "$SUITE" != "lint" 
   exit 1
 fi
 
-if [ "$SETUP" == "travis" ]; then
-  mv ../Aaa $HOME/aaa
-fi
+mv ../Aaa $HOME/aaa
 
 ################################################################################
 # Install software necessary for tests and coverage: GAP and packages
