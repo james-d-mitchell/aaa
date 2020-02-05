@@ -9,24 +9,7 @@ if [ "$SUITE" != "test" ] && [ "$SUITE" != "coverage" ] && [ "$SUITE" != "lint" 
 fi
 
 if [ "$SETUP" == "travis" ]; then
-  mv ../Digraphs $HOME/digraphs
-fi
-
-################################################################################
-# Install software necessary for linting: cpplint and gaplint
-################################################################################
-
-if [ "$SUITE" == "lint" ]; then
-
-  # Install cpplint and gaplint
-  sudo pip install cpplint
-  sudo pip install gaplint
-
-  # Move Digraphs package into a GAP folder structure, so that cpplint is happy
-  mkdir $HOME/gap $HOME/gap/.git $HOME/gap/pkg
-  mv $HOME/digraphs $HOME/gap/pkg/digraphs
-
-  exit 0
+  mv ../Aaa $HOME/aaa
 fi
 
 ################################################################################
@@ -37,7 +20,7 @@ fi
 # Install GAP
 echo -e "\nInstalling GAP..."
 if [ "$GAP" == "required" ]; then
-  GAP=v`grep "GAPVERS" $HOME/digraphs/PackageInfo.g | awk -F'"' '{print $2}'`
+  GAP=v`grep "GAPVERS" $HOME/aaa/PackageInfo.g | awk -F'"' '{print $2}'`
 fi
 GAPROOT="$HOME/gap"
 echo -e "\nInstalling GAP $GAP into $GAPROOT..."
@@ -49,11 +32,11 @@ make -j4
 mkdir pkg
 
 ################################################################################
-# Copy Digraphs to its proper location
+# Copy Aaa to its proper location
 if [ "$SETUP" == "appveyor" ]; then
-  cp -r /cygdrive/c/projects/digraphs $GAPROOT/pkg/digraphs
+  cp -r /cygdrive/c/projects/aaa $GAPROOT/pkg/aaa
 elif [ "$SETUP" == "travis" ]; then
-  mv $HOME/digraphs $GAPROOT/pkg/digraphs
+  mv $HOME/aaa $GAPROOT/pkg/aaa
 fi
 
 # Common curl settings
@@ -73,7 +56,7 @@ for PKG in "${PKGS[@]}"; do
   if [ "$PACKAGES" == "latest" ] || [ "$PKG" == "profiling" ]; then
     VERSION=`$CURL -s "https://github.com/gap-packages/$PKG/releases/latest" | grep \<title\>Release | awk -F' ' '{print $2}'`
   else
-    VERSION=`grep "\"$PKG\"" $GAPROOT/pkg/digraphs/PackageInfo.g | awk -F'"' '{print $4}' | cut -c3-`
+    VERSION=`grep "\"$PKG\"" $GAPROOT/pkg/aaa/PackageInfo.g | awk -F'"' '{print $4}' | cut -c3-`
   fi
 
   URL="https://github.com/gap-packages/$PKG/releases/download/v$VERSION/$PKG-$VERSION.tar.gz"
