@@ -13,7 +13,7 @@ DIG_DIR="$GAPROOT/pkg/digraphs"
 
 
 echo -e "\nRunning Aaa package tests and manual examples..."
-echo "LoadPackage(\"aaa\"); TestDirectory("tst"); QUIT;" |
+echo "LoadPackage(\"aaa\"); TestDirectory(\"tst/standard\"); QUIT;" |
   $GAPSH -A -x 80 -r -m 768m -o $MEM -T 2>&1 | tee -a $TESTLOG
 
 echo -e "\nSuite complete." # AppVeyor needs some extra command here (like this)
