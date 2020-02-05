@@ -9,7 +9,7 @@ if [ "$SUITE" != "test" ] && [ "$SUITE" != "coverage" ] && [ "$SUITE" != "lint" 
 fi
 
 if [ "$SETUP" == "travis" ]; then
-  mv ../Digraphs $HOME/digraphs
+  mv ../Aaa $HOME/aaa
 fi
 
 ################################################################################
@@ -20,7 +20,7 @@ fi
 # Install GAP
 echo -e "\nInstalling GAP..."
 if [ "$GAP" == "required" ]; then
-  GAP=v`grep "GAPVERS" $HOME/digraphs/PackageInfo.g | awk -F'"' '{print $2}'`
+  GAP=v`grep "GAPVERS" $HOME/aaa/PackageInfo.g | awk -F'"' '{print $2}'`
 fi
 GAPROOT="$HOME/gap"
 echo -e "\nInstalling GAP $GAP into $GAPROOT..."
