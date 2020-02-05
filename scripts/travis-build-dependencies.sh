@@ -33,11 +33,7 @@ mkdir pkg
 
 ################################################################################
 # Copy Aaa to its proper location
-if [ "$SETUP" == "appveyor" ]; then
-  cp -r /cygdrive/c/projects/aaa $GAPROOT/pkg/aaa
-elif [ "$SETUP" == "travis" ]; then
-  mv $HOME/aaa $GAPROOT/pkg/aaa
-fi
+mv $HOME/aaa $GAPROOT/pkg/aaa
 
 # Common curl settings
 CURL="curl --connect-timeout 5 --max-time 10 --retry 5 --retry-delay 0 --retry-max-time 40 -L"
