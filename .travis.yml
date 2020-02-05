@@ -20,4 +20,4 @@ before_script:
   - scripts/travis-build-dependencies.sh
 
 script:
-  - scripts/travis-buili-aaa.sh && scripts/travis-test.sh
+  - scripts/travis-build-aaa.sh && scripts/travis-test.sh
