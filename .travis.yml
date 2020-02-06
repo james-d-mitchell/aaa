@@ -11,9 +11,7 @@ matrix:
   include:
     - env:
       - SUITE=test
-      - ABI=64
       - GAP=stable-4.10
-      - PACKAGES=required
 
 before_script:
   - export GAPROOT="$HOME/gap"
