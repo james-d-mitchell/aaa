@@ -51,5 +51,5 @@ git clone --depth=1 -b v1.0 https://github.com/gap-packages/PackageManager.git
 
 cd $GAPROOT
 echo -e "\nUpdating PackageManager..."
-echo "LoadPackage(\"PackageManager\"); UpdatePackage(\"PackageManager\"); InstallPackage(\"digraphs\"); InstallPackage(\"automata\"); QUIT;" |
+echo "LoadPackage(\"PackageManager\"); UpdatePackage(\"PackageManager\", false); InstallPackage(\"digraphs\", false); InstallPackage(\"automata\", false); QUIT;" |
   $GAPSH -A -x 80 -r -m 768m -o $MEM -T 2>&1
