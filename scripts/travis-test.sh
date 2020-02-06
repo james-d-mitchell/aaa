@@ -12,7 +12,7 @@ GAPSH="$GAPROOT/bin/gap.sh"
 cd $GAPROOT/pkg/aaa
 echo -e "\nRunning Aaa package tests..."
 echo "SetInfoLevel(InfoPackageLoading,4); LoadPackage(\"automata\"); LoadPackage(\"aaa\"); TestDirectory(\"tst/standard\"); QUIT;" |
-  $GAPSH -A -x 80 -r -m 768m -o $MEM -T 2>&1 | tee -a $TESTLOG
+  $GAPSH -A -x 80 -m 768m -o 1g -T 2>&1 | tee -a $TESTLOG
 
 echo -e "\nSuite complete." # AppVeyor needs some extra command here (like this)
 
