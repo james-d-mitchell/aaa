@@ -29,6 +29,9 @@ cd $GAPROOT
 make -j4
 mkdir pkg
 
+# Common curl settings
+CURL="curl --connect-timeout 5 --max-time 10 --retry 5 --retry-delay 0 --retry-max-time 40 -L"
+
 ################################################################################
 # Install required GAP packages
 cd $GAPROOT/pkg
@@ -48,4 +51,4 @@ git clone --depth=1 -b v1.0 https://github.com/gap-packages/PackageManager.git
 cd $GAPROOT
 echo -e "\nUpdating PackageManager..."
 echo "LoadPackage(\"PackageManager\"); UpdatePackage(\"PackageManager\"); InstallPackage(\"digraphs\"); InstallPackage(\"automata\"); QUIT;" |
-  $GAPSH -A -x 80 -r -m 768m -o $MEM -T 2>&1 | tee -a $TESTLOG
+  $GAPSH -A -x 80 -r -m 768m -o $MEM -T 2>&1
