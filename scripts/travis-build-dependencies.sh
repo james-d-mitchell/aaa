@@ -8,6 +8,7 @@ if [ "$SUITE" != "test" ] ; then
   exit 1
 fi
 
+GAPSH="$GAPROOT/bin/gap.sh"
 mv ../aaa $HOME/aaa
 
 ################################################################################
