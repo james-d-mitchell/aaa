@@ -74,3 +74,4 @@ DeclareOperation("FixedOutputDigraph",
 DeclareOperation("InterestingNumbers", [IsTransducer]);
 DeclareOperation("GyrationValues", [IsTransducer, IsDenseList]);
 DeclareOperation("GyrationAtLevel", [IsTransducer, IsPosInt]);
+DeclareOperation("OneSidedDecomposition", [IsTransducer]);

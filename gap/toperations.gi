@@ -1603,3 +1603,92 @@ function(T)
   return RemInt(Size(ImageAsUnionOfCones(T)), NrInputSymbols(T));
 end);
 
+InstallMethod(OneSidedDecomposition, "for a transducer",
+[IsTransducer],
+function(T)
+  local T2, factor, makefactor, inverse, i, j, k, output, nrep, nrelated, Bstates, BTransitions, Boutputs, state;
+  if not InLn(T) then
+    return fail;
+  fi;
+  for i in States(T) do
+    if not Size(Set(OutputFunction(T)[i])) = NrInputSymbols(T) then
+      return fail;
+    fi;
+  od;
+
+  makefactor := function(T)
+    inverse := SynchronousLn(OnInverse(T));
+
+    for i in States(inverse) do
+      if not Size(Set(OutputFunction(inverse)[i])) = NrInputSymbols(inverse) then
+        return fail;
+      fi;
+    od;
+
+    for j in States(inverse) do
+      for k in [j + 1 .. NrStates(inverse)] do
+        if ForAll(InputAlphabet(inverse), x -> TransitionFunction(inverse)[j][Position(OutputFunction(inverse)[j], [x])] = TransitionFunction(inverse)[k][Position(OutputFunction(inverse)[k], [x])]) then
+          inverse := CopyTransducerWithInitialState(inverse, j);
+          inverse := CopyTransducerWithInitialState(inverse, k);
+        break;
+        fi;
+      od;
+    od;
+
+    nrelated:= function(q_1,q_2,n)
+      if n = 0 then
+        return q_1=q_2;
+      fi;
+      return ForAll([1 .. NrInputSymbols(inverse)], y -> nrelated(TransitionFunction(inverse)[q_1][y], TransitionFunction(inverse)[q_2][y], n-1));
+    end;
+  
+    nrep := function(q, n)
+      for j in States(inverse) do
+        if nrelated(j, q, n) then
+          return j;
+        fi;
+      od;
+    end;
+
+    for i in States(T) do
+      if nrelated(1, 2, i) then
+        break;
+      fi;
+    od;
+
+    i:= i-1;
+ 
+    Bstates := List(States(inverse), x -> nrep(x, i));
+    Bstates := Set(Bstates);
+    BTransitions := [];
+    for state in Bstates do
+      Add(BTransitions, List(TransitionFunction(inverse)[state], y-> nrep(y, i)));
+    od;
+  
+    Boutputs := List(Bstates, x-> List([0 .. NrInputSymbols(inverse)-1], y-> [y]));
+    for j in [0 .. NrInputSymbols(inverse)-1] do
+      Boutputs[2][Position(OutputFunction(inverse)[2], [j])] := [Position(OutputFunction(inverse)[1], [j]) - 1];
+    od;
+
+    for j in [1 .. Size(BTransitions)] do
+      for k in [1 .. Size(BTransitions[j])] do
+        BTransitions[j][k] := Position(Bstates, nrep(BTransitions[j][k], i));
+      od;
+    od;
+  
+    return Transducer(NrInputSymbols(inverse), NrOutputSymbols(inverse), BTransitions, Boutputs);
+  end;  
+  output := [];
+
+  T2:= CopyTransducerWithInitialState(T, 1);
+  while not NrStates(T2) = 1 do
+    factor := makefactor(T2);
+    Add(output, OnInverse(factor));
+    T2 := T2 + factor;
+  od;
+  if not IsomorphicTransducers(T2, IdentityTransducer(NrInputSymbols(T2))) then
+    Add(output, T2);
+  fi;
+  
+  return Reversed(output);
+end);
